@@ -146,6 +146,7 @@ class DataCollector:
     def _record_agents(self, model):
         """ Record agents data in a mapping of functions and agents. """
         rep_funcs = self.agent_reporters.values()
+
         if all([hasattr(rep, 'attribute_name') for rep in rep_funcs]):
             prefix = ['model.schedule.steps', 'unique_id']
             attributes = [func.attribute_name for func in rep_funcs]
@@ -155,7 +156,12 @@ class DataCollector:
                 prefix = (agent.model.schedule.steps, agent.unique_id)
                 reports = tuple(rep(agent) for rep in rep_funcs)
                 return prefix + reports
-        agent_records = map(get_reports, model.schedule.agents)
+        att_name = [(rep.attribute_name) for rep in rep_funcs]
+        print(att_name[0] == 'duration')
+        if(att_name[0] == 'duration'):
+            agent_records = map(get_reports, model.space.get_bike_agents())
+        else:
+            agent_records = map(get_reports, model.space.get_stations_agents())
         return agent_records
 
     def collect(self, model):

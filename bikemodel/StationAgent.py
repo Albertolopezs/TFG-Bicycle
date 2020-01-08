@@ -25,18 +25,18 @@ class StationAgent(Agent):
             Priority Low - 2
         """
         
-        if(self.dock_bikes <5):
+        if(self.dock_bikes <0.3*self.total_bases):
             self.priority = 2
-        elif(self.free_bases <5):
+        elif(self.free_bases <0.3*self.total_bases):
             self.priority = 1
         else:
             self.priority = 0
             
     
     def step(self):
-        if(self.dock_bikes <5):
+        if(self.dock_bikes <0.3*self.total_bases):
             self.priority = 2
-        elif(self.free_bases <5):
+        elif(self.free_bases <0.3*self.total_bases):
             self.priority = 1
         else:
             self.priority = 0

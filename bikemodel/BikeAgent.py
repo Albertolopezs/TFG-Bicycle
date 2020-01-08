@@ -101,8 +101,8 @@ class BikeAgent(Agent):
             dist = grd_to_m*dist
             #Check the commitness of the agent
             if((dist <250)&(np.random.choice([True,False],p=[0.9,0.1]))):
-                    station_dest = station_final
-                    self.distance += dist 
+                station_dest = station_final
+                self.distance += dist 
             elif((dist <500)&(np.random.choice([True,False],p=[0.5,0.5]))):
                 station_dest = station_final
                 self.distance += dist
@@ -116,13 +116,13 @@ class BikeAgent(Agent):
             dist,station_final = self.get_dest_station_low(station_dest)
             dist = grd_to_m*dist
             #Check the commitness of the agent
-            if((dist <500)&(np.random.choice([True,False],p=[0.9,0.1]))):
-                    station_dest = station_final
-                    self.distance += dist 
-            elif((dist <1000)&(np.random.choice([True,False],p=[0.5,0.5]))):
+            if((dist <375)&(np.random.choice([True,False],p=[0.9,0.1]))):
+                station_dest = station_final
+                self.distance += dist 
+            elif((dist <750)&(np.random.choice([True,False],p=[0.5,0.5]))):
                 station_dest = station_final
                 self.distance += dist
-            elif((dist <1500)&(np.random.choice([True,False],p=[0.2,0.8]))):
+            elif((dist <1125)&(np.random.choice([True,False],p=[0.2,0.8]))):
                 station_dest = station_final
                 self.distance += dist
                 
@@ -130,7 +130,7 @@ class BikeAgent(Agent):
         return station_orig,station_dest
 
     def get_route(self,ini_pos, fin_pos):
-        url = "http://localhost:8080/ors/routes"  
+        url = "http://ors-madrid.gsi.upm.es/ors/routes"  
         querystring = {"profile":"cycling-regular", "coordinates": str(ini_pos[1])+","+ str(ini_pos[0]) +"|"+str(fin_pos[1])+","+ str(fin_pos[0]), "preference":"recommended", "geometry_format":"geojson"}
         headers = {'Content-Type': "application/json"}
         response = requests.request("GET", url, headers=headers, params=querystring)

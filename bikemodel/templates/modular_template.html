@@ -3,7 +3,7 @@
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
-	<title>{{ model_name }} (Mesa visualization)</title>
+	<title>{{ model_name }}</title>
     <link href="/static/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
     <link href="/static/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
     <link href="/static/css/bootstrap-switch.min.css" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
    crossorigin=""/>
-   <style type="text/css">
+   <style type="text/css" rel="stylesheet" >
    #hour{
     text-align: center;
     box-shadow: 3px 3px 3px 3px;
@@ -31,6 +31,40 @@
    #sidebar > div{
     margin-left: 5px;
     margin-right: 50px;
+
+   }
+   footer{
+    margin-top: 20px;
+    text-align: center;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+
+   }
+   footer > div {
+    margin-left: 30px;
+   }
+   footer >img {
+    margin-right: 30px;
+   }
+   img{
+    width: 70px;
+    height: 70px;
+
+   }
+   .logo{
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+   }
+   nav{
+    background-color: #49a8db;
+    color:white;
+
+   }
+   a{
+    color: #c2ecec;
    }
 
     </style>
@@ -46,7 +80,7 @@
 <body onload="this.LeafletVisualization.create_map()">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-static-top">
+    <nav class="navbar navbar-dark primary-color" >
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -55,7 +89,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-            <a class="navbar-brand" href="#">{{ model_name }}</a>
+            <img src="static/img/logoAJ.png" height="30" width="30" class="logo"
+      alt="mdb logo"> 
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -73,9 +108,11 @@
                     <li id="step"><a  href="#">Step</a></li>
                     <li id="reset"><a href="#">Reset</a></li>
                 </ul>
-            </div><!--/.nav-collapse -->
+            </div>
         </div>
-    </nav>
+
+</nav>
+    
     <div class="container">
 
         <div id="hour"><b>Hour:</b> 0 <b>Minutes:</b> 0</div>
@@ -147,3 +184,11 @@
 
 
 </body>
+
+<footer>
+    <a href="http://www.gsi.dit.upm.es/es/"><img src="/static/img/gsi.png"></a>
+    <div><br>
+        Alberto López Santiago <br>
+        GSI 2018-2019 ©
+    </div>
+</footer>

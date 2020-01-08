@@ -26,7 +26,7 @@ class TruckAgent(Agent):
         self.returning = False
         self.model.stations_revised[self.index]= self.id_station_dest
         self.cnt_st = 0                     #Number of steps moving to the same station
-        self.maxCapacityThreshold = 6
+        self.maxCapacityThreshold = 15
         self.minCapacityThreshold = 0
             
     
@@ -80,10 +80,10 @@ class TruckAgent(Agent):
     
     def get_station(self):
         if(self.returning == False):
-            if(self.capacity <3):
+            if(self.capacity <self.maxCapacityThreshold/5):
                 station_dest = self.get_station_high(self.pos)
             #if  semi-full or more get nearest Low load station to unload the truck
-            elif((self.capacity >= 3)):
+            else:
                 station_dest = self.get_station_low(self.pos)
                 
         else:
@@ -151,7 +151,7 @@ class TruckAgent(Agent):
     
         
     def get_route(self,ini_pos, fin_pos):
-        url = "http://localhost:8080/ors/routes"  
+        url = "http://ors-madrid.gsi.upm.es/ors/routes"  
         querystring = {"profile":"driving-car", "coordinates": str(ini_pos[1])+","+ str(ini_pos[0]) +"|"+str(fin_pos[1])+","+ str(fin_pos[0]), "preference":"fastest", "geometry_format":"geojson"}
         headers = {'Content-Type': "application/json"}
         response = requests.request("GET", url, headers=headers, params=querystring)

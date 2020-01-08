@@ -9,6 +9,7 @@ from bikemodel.mesa.time import RandomActivation
 from bikemodel.TruckAgent import TruckAgent
 from bikemodel.StationAgent import StationAgent
 from bikemodel.BikeAgent import BikeAgent
+from ast import literal_eval
 import numpy as np
 import requests
 import math
@@ -17,17 +18,14 @@ import json
 
 #Constants
 grd_to_m = (111.32*1000)
-truck_prob = [0,-1,-3,1,-1,1,1,1,1,1,-1,-1,-1,-2,2,2,-2,-1,2,2,-3,-2,4,0]
+truck_prob = [0,-1,-1,1,-1,1,1,0,1,1,-1,-1,-1,-2,1,2,-2,-1,2,2,-3,-2,3,0]
 
 station_df = pd.read_csv('datasets/initialState-stations.csv').drop('Unnamed: 0', axis=1)
 initialState_trips = pd.read_csv('datasets/initialState-trips.csv').drop('Unnamed: 0', axis=1)
 #Cargamos el array de pesos de las estaciones
 prob_df_u = pd.read_csv('datasets/prob_df_u.csv').drop('Unnamed: 0', axis=1).transpose()
 #Cargamos la matriz de pesos de las rutas
-prob_df_p_default = pd.read_csv('datasets/prob_dest_default.csv').drop('Unnamed: 0', axis=1).transpose()
-prob_df_p_610 = pd.read_csv('datasets/prob_dest_610.csv').drop('Unnamed: 0', axis=1).transpose()
-prob_df_p_1316 = pd.read_csv('datasets/prob_dest_1316.csv').drop('Unnamed: 0', axis=1).transpose()
-prob_df_p_1821 = pd.read_csv('datasets/prob_dest_1821.csv').drop('Unnamed: 0', axis=1).transpose()
+prob_dest_df = pd.read_csv('datasets/prob_dest.csv').drop('Unnamed: 0', axis=1).transpose()
 
 #We define Model class
 class BikeModel(Model):
@@ -74,7 +72,12 @@ class BikeModel(Model):
                         "Successful trips": lambda m: self.finished_routes,
                         "Check-in incentives": lambda m: self.checkin_incentive,
                         "Check-out incentives": lambda m: self.checkout_incentive,
-                        "Number of active bikers": lambda m: self.get_activeBikers(m)})  
+                        "Number of active bikers": lambda m: self.get_activeBikers(m)},
+        agent_reporters={"Free bases": "free_bases","Dock bikes": "dock_bikes"})  
+
+        self.datacollectorBikers = DataCollector(
+            agent_reporters={"Duration":"duration", "Distance": "distance"}
+            )
         
                 
     def step(self):
@@ -90,6 +93,12 @@ class BikeModel(Model):
                     self.create_truck_agents(change_truck)
 
         self.datacollector.collect(self)
+        self.datacollectorBikers.collect(self)
+        if(self.minutes==0):
+            df = self.datacollector.get_agent_vars_dataframe()
+            df.to_csv('logs/'+'logs_stations-h'+str(self.hour)+str(time.time())+'.csv')
+            df = self.datacollectorBikers.get_agent_vars_dataframe()
+            df.to_csv('logs/'+'logs_stations-Bikers'+str(time.time())+'.csv')
         self.schedule.step()
         self.create_bike_agents(self.number_trips[self.hour]*self.percTrips,self.hour)
         if(self.minutes<59):
@@ -187,7 +196,26 @@ class BikeModel(Model):
     
     def create_bike_agents(self, N, hour):
         n_routes  = int(abs(np.random.normal(loc=N/60, scale=1.0, size=None)))
-        
+        """
+        #Evento Wizink
+        if(self.hour == 19):
+            posWizink = [40.424056, -3.672555]
+            stations = self.space.get_stations_agents()
+            for i in range(2):
+                station_close = []
+                id_orig,id_dest = self.get_id()
+                for j in stations:
+                    if(self.space.get_distance(posWizink,[j.latitude,j.longitude]) < 0.003):
+                        station_close.append(j)
+                id_dest = np.random.choice(station_close).index
+                ini_pos = self.get_station_pos(id_orig)
+                route = []
+                a =BikeAgent(self,self.cnt_agents,id_dest,id_orig,route,ini_pos,self.bike_speed)
+                self.schedule.add(a)
+                self.space.place_agent(a,ini_pos)
+                self.cnt_agents +=1
+        """
+        #Comportamiento normal
         for i in range(n_routes):
             
             #Creamos los agentes 
@@ -202,24 +230,13 @@ class BikeModel(Model):
     
     
     def get_id(self):
-        agents = self.space.get_stations_agents()
+        agents = self.space.get_stations_agents()[:167]
+        
         prob_unplug =prob_df_u[self.hour].tolist()
-        id_orig = np.random.choice(agents,p=prob_unplug).index  
-        if(self.hour >= 6 & self.hour <10):
-            p=prob_df_p_610[id_orig].tolist()
-
-        elif(self.hour>=13 & self.hour <16):
-            p=prob_df_p_1316[id_orig].tolist()
-                
-        elif(self.hour>=18 & self.hour < 21):
-            p=prob_df_p_1821[id_orig].tolist()
-     
-        else:
-            p=prob_df_p_default[id_orig].tolist()
-         
+        id_orig = np.random.choice(agents,p=prob_unplug).index 
         
-        
-        id_dest = np.random.choice(agents,p=p).index
+        prob_plug=literal_eval(prob_dest_df[self.hour][id_orig])
+        id_dest = np.random.choice(agents,p=prob_plug).index
 
         return [id_orig,id_dest]
         

@@ -1,0 +1,9 @@
+version: '1'
+services:
+  app:
+    build: .
+    container_name: app
+    expose:
+      - "5001"
+    environment:
+      - SECRET=app

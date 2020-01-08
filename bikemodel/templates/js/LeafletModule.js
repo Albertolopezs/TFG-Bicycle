@@ -58,7 +58,6 @@
 	    // load a tile layer
 	    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 	       {
-	        attribution: 'Map data (c) OpenStreetMap, Alberto Lopez Santiago - GSI',
 	        maxZoom: maxZoom,
 	        minZoom: minZoom
 	        }).addTo(map);   
